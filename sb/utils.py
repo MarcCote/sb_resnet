@@ -74,16 +74,18 @@ def calc_kl_divergence(posterior_a, posterior_b, alpha, beta):
 # Misc #
 ########
 
-def sharedX(value, name=None, borrow=True, keep_on_cpu=False):
+def sharedX(value, name=None, borrow=True, broadcastable=None, keep_on_cpu=False):
     """ Transform value into a shared variable of type floatX """
     if keep_on_cpu:
         return T._shared(theano._asarray(value, dtype=theano.config.floatX),
                          name=name,
-                         borrow=borrow)
+                         borrow=borrow,
+                         broadcastable=broadcastable)
 
     return theano.shared(theano._asarray(value, dtype=theano.config.floatX),
                          name=name,
-                         borrow=borrow)
+                         borrow=borrow,
+                         broadcastable=broadcastable)
 
 
 def mkdirs(path):
@@ -489,8 +491,8 @@ def get_adam_updates_from_gradients(gradients, lr=0.0003, b1=0.95, b2=0.999, e=1
     i_t = i + 1.
     updates[i] = i_t
     for p, g in gradients.items():
-        m = sharedX(p.get_value()*0.)
-        v = sharedX(p.get_value()*0.)
+        m = sharedX(p.get_value()*0., broadcastable=p.broadcastable)
+        v = sharedX(p.get_value()*0., broadcastable=p.broadcastable)
 
         m_t = (b1 * m) + ((1. - b1) * g)
         v_t = (b2 * v) + ((1. - b2) * g**2)
