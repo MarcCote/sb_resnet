@@ -299,7 +299,7 @@ def run_ResNet(dataset,
     else:
         print "No! Starting from scratch."
 
-    gradients = dict(zip(params, T.grad(cost, params)))
+    gradients = OrderedDict(zip(params, T.grad(cost, params)))
 
     if gradient_clipping is not None:
         grad_norm = T.sqrt(sum(map(lambda d: T.sqr(d).sum(), gradients.values())))
